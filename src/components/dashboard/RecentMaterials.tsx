@@ -1,8 +1,10 @@
-import { FileText, Clock, Loader2, FileX2, Trash2, AlertCircle, CheckCircle2, FileWarning } from "lucide-react";
+import { FileText, Clock, Loader2, FileX2, Trash2, AlertCircle, CheckCircle2, FileWarning, Swords } from "lucide-react";
 import { EmptyState } from "@/components/ui/states";
 import { Badge } from "@/components/ui/Badge";
 import { useLibraryStore } from "@/store/libraryStore";
-import { formatFileSize } from "@/utils/pdfExtractor";
+import { formatRelativeTime, formatFileSize } from "@/utils/formatters";
+import { EXTRACTION_STATUS_CONFIG } from "@/types/constants";
+import { useGameStore } from "@/store/gameStore";
 import type { LibraryItem } from "@/types";
 
 interface RecentMaterialsProps {
@@ -11,23 +13,6 @@ interface RecentMaterialsProps {
   onRemove?: (id: string) => void;
 }
 
-function formatRelativeTime(iso: string): string {
-  const date = new Date(iso);
-  const now = new Date();
-  const diffMs = now.getTime() - date.getTime();
-  const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
-  const diffDays = Math.floor(diffHours / 24);
-  if (diffDays > 0) return `${diffDays}d ago`;
-  if (diffHours > 0) return `${diffHours}h ago`;
-  return "just now";
-}
-
-const statusBadge: Record<LibraryItem["status"], { color: "cyan" | "gold" | "rose" | "slate"; label: string }> = {
-  processing: { color: "cyan", label: "Processing" },
-  ready: { color: "gold", label: "Ready" },
-  error: { color: "rose", label: "Error" },
-  "low-text": { color: "slate", label: "Low Text" },
-};
 
 export function RecentMaterials({ materials, showRemove = false, onRemove }: RecentMaterialsProps) {
   // If no materials prop is passed, use the live store
@@ -35,6 +20,7 @@ export function RecentMaterials({ materials, showRemove = false, onRemove }: Rec
   const docs = materials ?? storeDocs;
   const storeRemove = useLibraryStore((s) => s.removeDocument);
   const handleRemove = onRemove ?? storeRemove;
+  const startBattle = useGameStore((s) => s.startBattle);
 
   if (docs.length === 0) {
     return (
@@ -61,7 +47,7 @@ export function RecentMaterials({ materials, showRemove = false, onRemove }: Rec
 
       <div className="space-y-2">
         {recentDocs.map((item) => {
-          const badge = statusBadge[item.status];
+          const badge = EXTRACTION_STATUS_CONFIG[item.status];
           return (
             <div
               key={item.id}
@@ -92,6 +78,18 @@ export function RecentMaterials({ materials, showRemove = false, onRemove }: Rec
                   <Badge color={badge.color}>{badge.label}</Badge>
                 </div>
               </div>
+
+              {/* Quick Battle button */}
+              {item.status === "ready" && (
+                <button
+                  onClick={() => startBattle(item)}
+                  className="inline-flex items-center gap-1 rounded-lg bg-gradient-to-r from-violet-600 to-indigo-600 px-2 py-1 text-xs font-bold text-white shadow-md shadow-violet-600/30 hover:from-violet-500 hover:to-indigo-500 hover:scale-105 active:scale-95 transition-all"
+                  title="Challenge Boss with this document"
+                >
+                  <Swords className="h-3 w-3" />
+                  <span>Battle</span>
+                </button>
+              )}
 
               {/* Remove button */}
               {showRemove && (

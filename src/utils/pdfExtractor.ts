@@ -90,13 +90,8 @@ export async function extractPdfText(
   }
 }
 
-/**
- * Generate a short preview of extracted text for display.
- */
-export function createTextPreview(text: string, maxLength = 500): string {
-  if (text.length <= maxLength) return text;
-  return text.slice(0, maxLength).trim() + "...";
-}
+// Re-export shared formatting helpers
+export { createTextPreview, formatFileSize } from "./formatters";
 
 /**
  * Validate a file is a PDF and within the size limit.
@@ -118,13 +113,4 @@ export function validatePdfFile(
   }
 
   return { valid: true };
-}
-
-/**
- * Format file size in human-readable units.
- */
-export function formatFileSize(bytes: number): string {
-  if (bytes < 1024) return `${bytes} B`;
-  if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
-  return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
 }

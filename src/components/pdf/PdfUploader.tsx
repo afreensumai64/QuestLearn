@@ -1,5 +1,5 @@
 import { useRef, useState, useCallback } from "react";
-import { Upload, Loader2, AlertCircle, CheckCircle2 } from "lucide-react";
+import { Upload, Loader2, AlertCircle, CheckCircle2, Swords } from "lucide-react";
 import { Badge } from "@/components/ui/Badge";
 import {
   extractPdfText,
@@ -8,7 +8,8 @@ import {
   createTextPreview,
   type PdfExtractionProgress,
 } from "@/utils/pdfExtractor";
-import type { LibraryItem } from "@/types";
+import type { LibraryItem, ExtractionStatus } from "@/types";
+import { useGameStore } from "@/store/gameStore";
 
 export interface PdfUploaderResult {
   document: LibraryItem;
@@ -35,6 +36,8 @@ export function PdfUploader({ maxSizeMB = 25, onExtracted }: PdfUploaderProps) {
   const [state, setState] = useState<UploadState>("idle");
   const [display, setDisplay] = useState<UploadDisplay | null>(null);
   const [isDragging, setIsDragging] = useState(false);
+  const [lastUploadedDoc, setLastUploadedDoc] = useState<LibraryItem | null>(null);
+  const startBattle = useGameStore((s) => s.startBattle);
 
   const reset = useCallback(() => {
     setState("idle");
@@ -80,33 +83,23 @@ export function PdfUploader({ maxSizeMB = 25, onExtracted }: PdfUploaderProps) {
         extractionStatus: result.status,
       };
 
-      if (result.status === "ready") {
-        setState("success");
-        setDisplay({
-          fileName: file.name,
-          fileSize: file.size,
-          pageCount: result.pageCount,
-          textPreview: createTextPreview(result.text),
-        });
-        onExtracted(baseDoc);
-      } else if (result.status === "low-text") {
-        setState("low-text");
-        setDisplay({
-          fileName: file.name,
-          fileSize: file.size,
-          pageCount: result.pageCount,
-          errorMessage: result.errorMessage,
-        });
-        onExtracted(baseDoc);
-      } else {
-        setState("error");
-        setDisplay({
-          fileName: file.name,
-          fileSize: file.size,
-          errorMessage: result.errorMessage,
-        });
-        onExtracted(baseDoc);
-      }
+      const uploadStateMap: Record<ExtractionStatus, UploadState> = {
+        ready: "success",
+        "low-text": "low-text",
+        error: "error",
+        processing: "processing",
+      };
+
+      setState(uploadStateMap[result.status] || "error");
+      setDisplay({
+        fileName: file.name,
+        fileSize: file.size,
+        pageCount: result.pageCount,
+        textPreview: result.status === "ready" ? createTextPreview(result.text) : undefined,
+        errorMessage: result.errorMessage,
+      });
+      setLastUploadedDoc(baseDoc);
+      onExtracted(baseDoc);
     },
     [maxSizeMB, onExtracted]
   );
@@ -219,15 +212,27 @@ export function PdfUploader({ maxSizeMB = 25, onExtracted }: PdfUploaderProps) {
                 </p>
               </div>
             )}
-            <button
-              onClick={(e) => {
-                e.stopPropagation();
-                reset();
-              }}
-              className="mt-4 text-sm text-violet-300 hover:text-violet-200 underline underline-offset-4"
-            >
-              Upload another file
-            </button>
+            <div className="mt-5 flex flex-col sm:flex-row items-center justify-center gap-3">
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  if (lastUploadedDoc) startBattle(lastUploadedDoc);
+                }}
+                className="w-full sm:w-auto inline-flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-violet-600 via-indigo-600 to-purple-600 px-5 py-2.5 text-sm font-bold text-white shadow-lg shadow-violet-600/40 hover:from-violet-500 hover:to-indigo-500 hover:scale-105 active:scale-95 transition-all duration-200 border border-violet-400/40"
+              >
+                <Swords className="h-4 w-4 animate-spin text-amber-300" style={{ animationDuration: "3s" }} />
+                <span>⚔️ Enter Live Game Battle!</span>
+              </button>
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  reset();
+                }}
+                className="text-xs text-slate-400 hover:text-slate-200 underline underline-offset-4"
+              >
+                Upload another file
+              </button>
+            </div>
           </div>
         )}
 

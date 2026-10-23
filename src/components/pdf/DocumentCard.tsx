@@ -10,9 +10,12 @@ import {
   Loader2,
   FileWarning,
   X,
+  Swords,
 } from "lucide-react";
 import { Badge } from "@/components/ui/Badge";
-import { formatFileSize } from "@/utils/pdfExtractor";
+import { formatRelativeTime, formatFileSize } from "@/utils/formatters";
+import { EXTRACTION_STATUS_CONFIG } from "@/types/constants";
+import { useGameStore } from "@/store/gameStore";
 import type { LibraryItem } from "@/types";
 
 interface DocumentCardProps {
@@ -20,32 +23,19 @@ interface DocumentCardProps {
   onRemove: (id: string) => void;
 }
 
-function formatRelativeTime(iso: string): string {
-  const date = new Date(iso);
-  const now = new Date();
-  const diffMs = now.getTime() - date.getTime();
-  const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
-  const diffDays = Math.floor(diffHours / 24);
-  if (diffDays > 0) return `${diffDays}d ago`;
-  if (diffHours > 0) return `${diffHours}h ago`;
-  return "just now";
-}
-
-const statusConfig: Record<
-  LibraryItem["status"],
-  { badge: "cyan" | "gold" | "rose" | "slate"; label: string; icon: typeof FileText }
-> = {
-  processing: { badge: "cyan", label: "Processing", icon: Loader2 },
-  ready: { badge: "gold", label: "Ready", icon: CheckCircle2 },
-  error: { badge: "rose", label: "Error", icon: AlertCircle },
-  "low-text": { badge: "slate", label: "Low Text", icon: FileWarning },
+const statusIcons: Record<LibraryItem["status"], typeof FileText> = {
+  processing: Loader2,
+  ready: CheckCircle2,
+  error: AlertCircle,
+  "low-text": FileWarning,
 };
 
 export function DocumentCard({ document: doc, onRemove }: DocumentCardProps) {
   const [expanded, setExpanded] = useState(false);
   const [confirmRemove, setConfirmRemove] = useState(false);
-  const status = statusConfig[doc.status];
-  const StatusIcon = status.icon;
+  const status = EXTRACTION_STATUS_CONFIG[doc.status];
+  const StatusIcon = statusIcons[doc.status];
+  const startBattle = useGameStore((s) => s.startBattle);
 
   return (
     <div className="rounded-xl border border-midnight-700/40 bg-midnight-800/40 transition-all hover:border-violet-500/30">
@@ -78,12 +68,22 @@ export function DocumentCard({ document: doc, onRemove }: DocumentCardProps) {
             {doc.pageCount !== undefined && (
               <span className="text-xs text-slate-500">{doc.pageCount} pages</span>
             )}
-            <Badge color={status.badge}>{status.label}</Badge>
+            <Badge color={status.color}>{status.label}</Badge>
           </div>
         </div>
 
         {/* Actions */}
-        <div className="flex items-center gap-1">
+        <div className="flex items-center gap-1.5">
+          {doc.status === "ready" && (
+            <button
+              onClick={() => startBattle(doc)}
+              className="inline-flex items-center gap-1 rounded-lg bg-gradient-to-r from-violet-600 to-indigo-600 px-2.5 py-1 text-xs font-bold text-white shadow-md shadow-violet-600/30 hover:from-violet-500 hover:to-indigo-500 hover:scale-105 active:scale-95 transition-all mr-1"
+              title="Launch Live Battle"
+            >
+              <Swords className="h-3 w-3" />
+              <span>Battle</span>
+            </button>
+          )}
           {doc.textPreview && doc.status === "ready" && (
             <button
               onClick={() => setExpanded((v) => !v)}

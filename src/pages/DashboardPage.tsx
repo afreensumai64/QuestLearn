@@ -9,14 +9,16 @@ import { RecentMaterials } from "@/components/dashboard/RecentMaterials";
 import { StreakDisplay } from "@/components/dashboard/StreakDisplay";
 import { RecommendedLesson } from "@/components/dashboard/RecommendedLesson";
 import {
-  demoUserStats,
   demoSubjects,
   demoContinueLearning,
   demoStreakDays,
   demoRecommendedLesson,
 } from "@/data/demoData";
+import { useGameStore } from "@/store/gameStore";
 
 export function DashboardPage() {
+  const stats = useGameStore((s) => s.stats);
+
   return (
     <div>
       <PageHeader
@@ -27,12 +29,12 @@ export function DashboardPage() {
 
       {/* Stats Grid */}
       <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
-        <StatCard stats={demoUserStats} />
+        <StatCard stats={stats} />
       </div>
 
       {/* XP Progress */}
       <div className="mt-6">
-        <XPProgress stats={demoUserStats} />
+        <XPProgress stats={stats} />
       </div>
 
       {/* Continue Learning + Upload Panel */}
@@ -57,7 +59,7 @@ export function DashboardPage() {
           <RecentMaterials showRemove />
         </div>
         <div className="space-y-6">
-          <StreakDisplay streak={demoUserStats.streak} days={demoStreakDays} />
+          <StreakDisplay streak={stats.streak} days={demoStreakDays} />
           <RecommendedLesson data={demoRecommendedLesson} />
         </div>
       </div>

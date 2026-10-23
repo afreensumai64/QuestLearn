@@ -1,0 +1,53 @@
+%PDF-1.4
+1 0 obj
+<< /Type /Catalog /Pages 2 0 R >>
+endobj
+2 0 obj
+<< /Type /Pages /Kids [3 0 R] /Count 1 >>
+endobj
+3 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 5 0 R >> >> /Contents 4 0 R >>
+endobj
+4 0 obj
+<< /Length 1585 >>
+stream
+BT /F1 12 Tf 50 750 Td (Quest Learn Test Document) Tj ET
+BT /F1 12 Tf 50 730 Td () Tj ET
+BT /F1 12 Tf 50 710 Td (This is a test PDF for verifying text extraction.) Tj ET
+BT /F1 12 Tf 50 690 Td () Tj ET
+BT /F1 12 Tf 50 670 Td (Chapter 1: Introduction to Machine Learning) Tj ET
+BT /F1 12 Tf 50 650 Td (Machine learning is a subset of artificial intelligence that enables) Tj ET
+BT /F1 12 Tf 50 630 Td (systems to learn and improve from experience without being explicitly) Tj ET
+BT /F1 12 Tf 50 610 Td (programmed. It focuses on developing algorithms that can access data) Tj ET
+BT /F1 12 Tf 50 590 Td (and use it to learn for themselves.) Tj ET
+BT /F1 12 Tf 50 570 Td () Tj ET
+BT /F1 12 Tf 50 550 Td (Chapter 2: Supervised Learning) Tj ET
+BT /F1 12 Tf 50 530 Td (Supervised learning is a type of machine learning where the model) Tj ET
+BT /F1 12 Tf 50 510 Td (is trained on labeled data. The algorithm learns a mapping from) Tj ET
+BT /F1 12 Tf 50 490 Td (inputs to outputs based on example input-output pairs.) Tj ET
+BT /F1 12 Tf 50 470 Td () Tj ET
+BT /F1 12 Tf 50 450 Td (Chapter 3: Neural Networks) Tj ET
+BT /F1 12 Tf 50 430 Td (Neural networks are computing systems inspired by the biological) Tj ET
+BT /F1 12 Tf 50 410 Td (neural networks in animal brains. They are the foundation of deep) Tj ET
+BT /F1 12 Tf 50 390 Td (learning and are used for tasks like image recognition and natural) Tj ET
+BT /F1 12 Tf 50 370 Td (language processing.) Tj ET
+BT /F1 12 Tf 50 350 Td () Tj ET
+BT /F1 12 Tf 50 330 Td (This document contains sufficient extractable text for testing purposes.) Tj ET
+endstream
+endobj
+5 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>
+endobj
+xref
+0 6
+0000000000 65535 f 
+0000000009 00000 n 
+0000000058 00000 n 
+0000000115 00000 n 
+0000000266 00000 n 
+00000000001919 00000 n 
+trailer
+<< /Size 6 /Root 1 0 R >>
+startxref
+1969
+%%EOF
